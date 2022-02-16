@@ -1,0 +1,29 @@
+---
+- hosts: srv-1
+  handlers:
+    - name: reboot ssh
+      service:
+        name: sshd
+        state: restarted
+        enabled: yes
+  tasks:
+    - name: configure ssh      
+      replace:
+        path: /etc/ssh/sshd_config
+        regexp: "Port 1111"
+        replace: "Port 1889"
+      notify: reboot ssh
+- hosts: 127.0.0.1
+  tasks:
+    - name: configure inventory
+      replace:
+        path: ./inventory
+        regexp: "172.20.30.100:1111"
+        replace: "172.20.30.100:1883"
+- hosts: srv-1
+  tasks:
+    - name: install curl
+      apt:
+        pkg:
+          - curl
+
